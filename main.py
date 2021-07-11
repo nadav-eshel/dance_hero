@@ -27,14 +27,18 @@ def main():
         cv2.putText(image, str(count), (10, 450), cv2.FONT_HERSHEY_SIMPLEX, 3, (0, 255, 0), 2, cv2.LINE_AA)
         # cv2.imshow('WebCam', image)
 
-        grey = cv2.cvtColor(vid_image, cv2.COLOR_BGR2GRAY)
-        # Make the grey scale image have three channels
-        grey_3_channel = cv2.cvtColor(grey, cv2.COLOR_GRAY2BGR)
-        h = 0
-        w = 0
-        grey_3_channel = grey_3_channel[h/2: -h/2 + 1, w/2: -w/2 + 1]
+        webcam_dim = (image.shape[1], image.shape[0])
+        ratio = webcam_dim[1] / webcam_dim[0]
 
-        numpy_horizontal_concat = np.concatenate((image, grey_3_channel), axis=1)
+        if not vid_image.shape[0] / vid_image.shape[1] == ratio:
+            crop_val = abs(int(vid_image.shape[1] * (1 - ratio) / 2))
+            vid_image = vid_image[:, crop_val: -crop_val, :]
+
+        xxx = vid_image.shape
+        yyy = image.shape
+        vid_image = cv2.resize(vid_image, webcam_dim, interpolation=cv2.INTER_AREA)
+
+        numpy_horizontal_concat = np.concatenate((image, vid_image), axis=1)
 
         cv2.imshow('WebCam', numpy_horizontal_concat)
 
@@ -50,7 +54,7 @@ def main():
 
 dance = 'thriller'
 dance_length = 10
-dance_path = ''
+dance_path = '/home/nadav/Downloads/video.mp4'
 if __name__ == '__main__':
 
     main()
